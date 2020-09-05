@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ee7f476a140ca264d929ffb5d123fab9, type: 3}
-  m_Name: SkinBrown
+  m_Name: SkinGreen
   m_EditorClassIdentifier: 
-  paletteName: Brown
+  paletteName: Green
   colors:
   - serializedVersion: 2
-    rgba: 4278209415
+    rgba: 4278763022
   - serializedVersion: 2
-    rgba: 4278397780
+    rgba: 4278949135
   - serializedVersion: 2
-    rgba: 4278393914
+    rgba: 4278408197
   - serializedVersion: 2
-    rgba: 4278257427
+    rgba: 4278604296

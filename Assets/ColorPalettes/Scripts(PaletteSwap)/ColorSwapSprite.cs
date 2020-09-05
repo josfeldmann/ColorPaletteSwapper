@@ -1,83 +1,37 @@
 ﻿using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 
 namespace PaletteSwapping {
-    public class PaletteGroup {
-
-        public int id;
-        public List<ColorSwapSprite> currentUnitsWithPalette;
-        public List<ColorPalette> colors;
-
-        public PaletteGroup(int id, List<ColorPalette> colors) {
-            this.id = id;
-            currentUnitsWithPalette = new List<ColorSwapSprite>();
-            this.colors = colors;
-        }
-    }
 
     [RequireComponent(typeof(SpriteRenderer))]
     public class ColorSwapSprite : MonoBehaviour {
 
+        public const int MAXINDICES = 255;
 
-        public SpriteRenderer spriteRenderer;
-
+        public bool swapOnAwake = true;
         public Texture2D colorSwapTexture;
-        byte swapTextureIndex;
-
         public List<PalettePair> palettes;
 
-        public const int maxIndices = 255;
-
+        private SpriteRenderer spriteRenderer;
         private static List<PaletteGroup> paletteInfo = new List<PaletteGroup>();
         private static List<int> availableIndexes = null;
-        private static int currentIndexCount = 0;
         private static bool textureCleared;
-
+        byte swapTextureIndex;
+        private bool initialSetup;
         private Color32 color = new Color32(0, 0, 0, 255);
 
-        private bool initialSetup;
-
         private void Awake() {
-
-
-
             if (!textureCleared) ClearTexture();
-
-
             if (!spriteRenderer) spriteRenderer = GetComponent<SpriteRenderer>();
-            ApplyPalettes(palettes);
+            if (swapOnAwake) ApplyPalettes(palettes);
         }
 
-
-        public void ClearTexture() {
-            for (int x = 0; x < colorSwapTexture.width; x++)
-                for (int y = 0; y < colorSwapTexture.height; y++)
-                    colorSwapTexture.SetPixel(x, y, new Color32(0, 0, 0, 0));
-
-            textureCleared = true;
-
-        }
-
-
-
-
-
-
-        Color32 clear = new Color32(0, 0, 0, 0);
-
-
-        public void MakeIndices() {
-            availableIndexes = new List<int>();
-
-            for (int i = 0; i < maxIndices; i++) {
-                availableIndexes.Add(i);
-            }
-
-        }
-
+       
+        //Call this to perform the swap
         public void ApplyPalettes(List<PalettePair> p1) {
 
             if (availableIndexes == null) MakeIndices();
@@ -93,10 +47,8 @@ namespace PaletteSwapping {
             int index = -1;
 
             foreach (PaletteGroup p in paletteInfo) {
-
                 if (p.colors.Count == key.Count) {
                     if (ListHelper.ContainsAll(p.colors, key)) {
-
                         if (!p.currentUnitsWithPalette.Contains(this)) {
                             p.currentUnitsWithPalette.Add(this);
                         }
@@ -111,7 +63,6 @@ namespace PaletteSwapping {
 
                 int newID = availableIndexes[0];
                 availableIndexes.RemoveAt(0);
-                // print("AddingNewThing");
 
                 PaletteGroup p = new PaletteGroup(newID, key);
                 p.currentUnitsWithPalette.Add(this);
@@ -119,57 +70,35 @@ namespace PaletteSwapping {
                 index = newID;
             }
 
-
-
-
             swapTextureIndex = (byte)index;
 
-
-
-
+            //Populate the renderTexture
             foreach (PalettePair p in palettes) {
                 SetColors(p.basePalette, p.swapPalette);
             }
 
-
             colorSwapTexture.Apply();
-
 
             color = spriteRenderer.color;
             color.a = swapTextureIndex;
             spriteRenderer.color = color;
-
-
-
-
-
         }
 
-
-        void SetColors(ColorPalette bp, ColorPalette cp) {
-
-
-
-
+        //Function that actually populates the render texture with the desired color pixels
+        private void SetColors(ColorPalette bp, ColorPalette cp) {
 
             if (bp.colors.Length != cp.colors.Length) {
                 Debug.LogError("Palettes are not the same size!");
                 return;
             }
 
-
             for (int x = 0; x < cp.colors.Length; x++) {
-                //  print(x + ": " + bp.colors[x].r);
                 colorSwapTexture.SetPixel(bp.colors[x].r, swapTextureIndex, cp.colors[x]);
             }
-
-
-
-
-
         }
 
-        void SetSwapTexture() {
+        //Apply the swap texture to the sprite renderer
+        private void SetSwapTexture() {
             MaterialPropertyBlock properties = new MaterialPropertyBlock();
             spriteRenderer.GetPropertyBlock(properties);
             properties.SetTexture("_SwapTex", colorSwapTexture);
@@ -178,13 +107,12 @@ namespace PaletteSwapping {
         }
 
         private void OnDestroy() {
-
             RemoveCurrentPalette();
-
         }
 
-
-        public void RemoveCurrentPalette() {
+        //Removes a count the palette from the database.
+        //If no more ColorSwapSprites with that palette combination exist then remove it from the database
+        private void RemoveCurrentPalette() {
 
 
             if (!initialSetup) {
@@ -201,21 +129,34 @@ namespace PaletteSwapping {
             foreach (PaletteGroup p in paletteInfo) {
                 if (p.colors.Count == key.Count) {
                     if (ListHelper.ContainsAll(p.colors, key)) {
-
                         p.currentUnitsWithPalette.Remove(this);
                         if (p.currentUnitsWithPalette.Count <= 0) {
                             int pIndex = p.id;
-                           // print("removed sucessfully " + Time.time);
                             availableIndexes.Add(pIndex);
                             paletteInfo.Remove(p);
                             break;
                         }
-
                     }
                 }
             }
+        }
 
 
+        //Clears the swap texture initially
+        private void ClearTexture() {
+            for (int x = 0; x < colorSwapTexture.width; x++)
+                for (int y = 0; y < colorSwapTexture.height; y++)
+                    colorSwapTexture.SetPixel(x, y, new Color32(0, 0, 0, 0));
+
+            textureCleared = true;
+        }
+
+        //Make indices for color swap database
+        private void MakeIndices() {
+            availableIndexes = new List<int>();
+            for (int i = 0; i < MAXINDICES; i++) {
+                availableIndexes.Add(i);
+            }
         }
 
 
