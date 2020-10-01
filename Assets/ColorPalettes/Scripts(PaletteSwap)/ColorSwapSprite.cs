@@ -35,7 +35,7 @@ namespace PaletteSwapping {
         public void ApplyPalettes(List<PalettePair> p1) {
 
             if (availableIndexes == null) MakeIndices();
-
+            if (!spriteRenderer) spriteRenderer = GetComponent<SpriteRenderer>();
             RemoveCurrentPalette();
             palettes = p1;
             SetSwapTexture();
