@@ -16,7 +16,7 @@ namespace PaletteSwapping {
         public Texture2D colorSwapTexture;
         public List<PalettePair> palettes;
 
-        private SpriteRenderer spriteRenderer;
+        public SpriteRenderer spriteRenderer;
         private static List<PaletteGroup> paletteInfo = new List<PaletteGroup>();
         private static List<int> availableIndexes = null;
         private static bool textureCleared;
@@ -35,7 +35,7 @@ namespace PaletteSwapping {
         public void ApplyPalettes(List<PalettePair> p1) {
 
             if (availableIndexes == null) MakeIndices();
-            if (!spriteRenderer) spriteRenderer = GetComponent<SpriteRenderer>();
+
             RemoveCurrentPalette();
             palettes = p1;
             SetSwapTexture();
