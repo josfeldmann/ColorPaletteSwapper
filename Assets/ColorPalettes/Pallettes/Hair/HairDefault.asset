@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee7f476a140ca264d929ffb5d123fab9, type: 3}
   m_Name: HairDefault
   m_EditorClassIdentifier: 
-  paletteName: Brown
+  paletteName: White
   colors:
   - serializedVersion: 2
     rgba: 4291677908

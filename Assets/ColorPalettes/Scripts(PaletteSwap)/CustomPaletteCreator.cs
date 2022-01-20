@@ -22,6 +22,7 @@ namespace PaletteSwapping {
         private void Awake() {
             MakePanels();
             colorMenu.Close();
+            colorMenu.gameObject.SetActive(false);
         }
 
         public void EditPalette(CustomPaletteSelectButton c) {

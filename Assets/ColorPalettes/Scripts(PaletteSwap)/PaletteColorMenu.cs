@@ -14,7 +14,7 @@ namespace PaletteSwapping {
         ColorPalette currentPalette;
         public ColorPicker picker;
         public CustomPaletteCreator creator;
-
+        public Transform bottomButtons;
 
         public void ClearList() {
             foreach (ColorSelectButton c in selectButtons) {
@@ -43,6 +43,7 @@ namespace PaletteSwapping {
                 index++;
                 selectButtons.Add(c1);
             }
+            bottomButtons.SetAsLastSibling();
             picker.gameObject.SetActive(true);
             currentlySelectedIndex = 0;
             picker.CurrentColor = c.colors[0];

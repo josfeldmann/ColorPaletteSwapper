@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee7f476a140ca264d929ffb5d123fab9, type: 3}
   m_Name: MainYellow
   m_EditorClassIdentifier: 
-  paletteName: Red
+  paletteName: Yellow
   colors:
   - serializedVersion: 2
     rgba: 4278742641
